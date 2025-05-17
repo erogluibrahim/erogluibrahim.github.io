@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reçete Sorgulama - SGK Eczane Sistemi</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; }
+    .header { background-color: #007BFF; color: white; padding: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .header .logo img { max-height: 50px; margin-right: 10px; }
+    .header h2 { margin: 0; font-size: 20px; }
+    .nav { background-color: #0056b3; padding: 10px; text-align: center; }
+    .nav a { color: white; margin: 0 10px; text-decoration: none; font-size: 16px; }
+    .container { max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input[type="text"] { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 10px 20px; background-color: #007BFF; border: none; border-radius: 4px; color: white; font-size: 16px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    .result { margin-top: 20px; padding: 10px; background-color: #e9ecef; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="https://via.placeholder.com/100x50?text=Logo1" alt="Logo 1">
+      <img src="https://via.placeholder.com/100x50?text=Logo2" alt="Logo 2">
+    </div>
+    <h2>SGK Eczane Sistemi</h2>
+  </div>
+  <div class="nav">
+    <a href="prescriptions.html">Reçete Sorgulama</a>
+    <a href="hasta_gecmisi.html">Hasta Geçmişi</a>
+    <a href="stok_kontrol.html">Stok Kontrol</a>
+    <a href="logout.html">Çıkış</a>
+  </div>
+  <div class="container">
+    <div style="background:#4a5a7a;color:white;padding:8px 12px;border-radius:4px 4px 0 0;font-weight:bold;font-size:16px;">E-Reçete Sorgu</div>
+    <div style="border:1px solid #bfc9d7;border-top:none;border-radius:0 0 4px 4px;background:#f7f8fa;padding:0 0 20px 0;">
+      <div style="background:#dbe3ef;font-weight:bold;padding:6px 12px;">Sorgulama</div>
+      <form id="receteForm" style="padding:12px 12px 0 12px;">
+        <div style="display:flex;align-items:center;margin-bottom:8px;">
+          <label style="width:140px;" for="tcNo">T.C. Kimlik No</label>
+          <span>:</span>
+          <input type="text" id="tcNo" style="margin-left:8px;width:160px;" placeholder="" maxlength="11">
+          <button type="button" style="margin-left:8px;background:#e6e6e6;color:#333;border:1px solid #bfc9d7;padding:4px 10px;border-radius:3px;font-size:13px;cursor:pointer;"> <img src="https://img.icons8.com/ios-filled/16/heart-with-pulse.png" style="vertical-align:middle;"> Hasta Kartından getir</button>
+        </div>
+        <div style="display:flex;align-items:center;margin-bottom:8px;">
+          <label style="width:140px;" for="receteNo">E-Reçete No</label>
+          <span>:</span>
+          <input type="text" id="receteNo" style="margin-left:8px;width:160px;" placeholder="">
+          <button type="button" onclick="searchPrescription();return false;" style="margin-left:8px;background:#4a5a7a;color:white;border:none;padding:4px 14px;border-radius:3px;font-size:13px;cursor:pointer;">Sorgula</button>
+          <button type="button" style="margin-left:8px;background:#e6e6e6;color:#333;border:1px solid #bfc9d7;padding:4px 10px;border-radius:3px;font-size:13px;cursor:pointer;"> <img src="https://img.icons8.com/ios-filled/16/meteor.png" style="vertical-align:middle;"> Doğal Afet Reçetesi Girişi</button>
+        </div>
+        <div style="display:flex;align-items:center;margin-bottom:8px;">
+          <label style="width:140px;" for="takipNo">Takip No</label>
+          <span>:</span>
+          <input type="text" id="takipNo" style="margin-left:8px;width:160px;" placeholder="">
+          <button type="button" style="margin-left:8px;background:#4a5a7a;color:white;border:none;padding:4px 14px;border-radius:3px;font-size:13px;cursor:pointer;">Sorgula</button>
+        </div>
+        <div style="display:flex;align-items:center;margin-bottom:8px;">
+          <label style="width:140px;" for="receteTarihi">Reçete Tarihi</label>
+          <span>:</span>
+          <input type="date" id="receteTarihi" style="margin-left:8px;width:160px;" value="2023-09-20">
+          <button type="button" style="margin-left:8px;background:#4a5a7a;color:white;border:none;padding:4px 14px;border-radius:3px;font-size:13px;cursor:pointer;">SMS olarak gönder</button>
+        </div>
+      </form>
+      <div id="result" class="result" style="display:none;"></div>
+    </div>
+  </div>
+  <script>
+    function searchPrescription(){
+      var data = {
+        "1111": {
+          "1111": {
+            patient: "Ahmet Yılmaz",
+            hastaBilgi: { bilgi: "40 yaş, erkek", dogum: "01.01.1984", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 10 mg, 1×1", miktar: 1, stok: 12, periyot: "1 Günde / 1 X 1,0", raf: "A-12" } ],
+            hastaGecmisi: "Arteriyel hipertansiyon (I10); ailede kardiyovasküler hastalık öyküsü",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• 17.03.2025 raporu<br>• 14.03.2025: LDL 140; 11.02.2025: LDL 135<br>• Tanı kodu: I10<br> `,
+            doktor: "Dr. Emre Demirli",
+            brans: "Kardiyoloji"
+          }
+        },
+        "1112": {
+          "1112": {
+            patient: "Elif Demir",
+            hastaBilgi: { bilgi: "75 yaş, kadın", dogum: "15.03.1949", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Atorvastatin 10 mg, 1×1", miktar: 1, stok: 8, periyot: "1 Günde / 1 X 1,0", raf: "B-10" } ],
+            hastaGecmisi: "Diabetes mellitus; periferik arter hastalığı",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• 12.02.2025 raporu<br>• 15.02.2025: LDL 72 `,
+            doktor: "Dr. Ayşe Güneş",
+            brans: "Endokrinoloji"
+          }
+        },
+        "1113": {
+          "1113": {
+            patient: "Mehmet Kaya",
+            hastaBilgi: { bilgi: "45 yaş, erkek", dogum: "20.07.1979", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Fenofibrat (Lipanthyl) 267 mg, 1×1", miktar: 1, stok: 5, periyot: "1 Günde / 1 X 1,0", raf: "C-2" } ],
+            hastaGecmisi: "Diabetes mellitus",
+            rapor: `<b>Raporda Fenofibrat ile ilgili rapor var:</b><br>• Başlangıç raporu<br>• Açıklama: "TGD 215; diyabetli hasta"`,
+            doktor: "Dr. Canan Polat",
+            brans: "Endokrinoloji"
+          }
+        },
+        "1114": {
+          "1114": {
+            patient: "Can Özkan",
+            hastaBilgi: { bilgi: "30 yaş", dogum: "10.11.1994", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Fenofibrat 267 mg, 30 tablet (idame)", miktar: 1, stok: 3, periyot: "1 Günde / 1 X 1,0", raf: "C-3" } ],
+            hastaGecmisi: "— (idame hastası)",
+            rapor: `<b>Raporda Fenofibrat ile ilgili rapor var:</b><br>• Rapor 04/08<br>• 20.06.2022: TGD 720 mg/dL; idame tedavi altında<br>• `,
+            doktor: "Dr. Selim Yavuz",
+            brans: "İç Hastalıkları"
+          }
+        },
+        "1115": {
+          "1115": {
+            patient: "Zeynep Acar",
+            hastaBilgi: { bilgi: "—", dogum: "", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Alfa lipoik asit", miktar: 1, stok: 7, periyot: "1 Günde / 1 X 1,0", raf: "D-1" } ],
+            hastaGecmisi: "Diyabetik polinöropati (G63.2)",
+            rapor: `<b>Raporda Alfa Lipoik Asit ile ilgili rapor var:</b><br>• Rapor G63.2<br>• Tanı: Diyabetik Polinöropati`,
+            doktor: "Dr. Fatma Uçar",
+            brans: "Nöroloji"
+          }
+        },
+        "1116": {
+          "1116": {
+            patient: "Kerem Şahin",
+            hastaBilgi: { bilgi: "11 yaş, erkek; 35 kg", dogum: "15.05.2013", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 10 mg, 1×1", miktar: 1, stok: 2, periyot: "1 Günde / 1 X 1,0", raf: "A-13" } ],
+            hastaGecmisi: "Son dönem böbrek hastalığı; hipertansiyon",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• 1. ölçüm: LDL = 165 mg/dL<br>• 2. ölçüm: LDL = 198 mg/dL`,
+            doktor: "Dr. Bülent Kaya",
+            brans: "Nefroloji"
+          }
+        },
+        "1117": {
+          "1117": {
+            patient: "Ege Yıldız",
+            hastaBilgi: { bilgi: "11 yaş, erkek; 35 kg", dogum: "22.06.2013", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 10 mg, 1×1", miktar: 1, stok: 2, periyot: "1 Günde / 1 X 1,0", raf: "A-13" } ],
+            hastaGecmisi: "Son dönem böbrek hastalığı",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• 1. ölçüm: LDL = 165 mg/dL<br>• 2. ölçüm: LDL = 198 mg/dL`,
+            doktor: "Dr. Zeynep Şahin",
+            brans: "Nefroloji"
+          }
+        },
+        "1118": {
+          "1118": {
+            patient: "Barış Kılıç",
+            hastaBilgi: { bilgi: "11 yaş, erkek; 35 kg", dogum: "03.07.2013", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 10 mg, 1×1", miktar: 1, stok: 2, periyot: "1 Günde / 1 X 1,0", raf: "A-13" } ],
+            hastaGecmisi: "Ailede kardiyovasküler hastalık öyküsü",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• 1. ölçüm: LDL = 165 mg/dL<br>• 2. ölçüm: LDL = 198 mg/dL`,
+            doktor: "Dr. Murat Tekin",
+            brans: "Kardiyoloji"
+          }
+        },
+        "1119": {
+          "1119": {
+            patient: "Okan Arslan",
+            hastaBilgi: { bilgi: "11 yaş, erkek; 35 kg", dogum: "11.08.2013", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 10 mg, 1×1", miktar: 1, stok: 2, periyot: "1 Günde / 1 X 1,0", raf: "A-13" } ],
+            hastaGecmisi: "Son dönem böbrek hastalığı; hipertansiyon",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• 1. ölçüm: LDL = 165 mg/dL`,
+            doktor: "Dr. Leyla Demir",
+            brans: "Nefroloji"
+          }
+        },
+        "1120": {
+          "1120": {
+            patient: "Nazlı Çelik",
+            hastaBilgi: { bilgi: "13 yaş; 21 kg", dogum: "09.09.2011", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Omalizumab 150 mg/1 ml enjektör", miktar: 1, stok: 1, periyot: "1 Günde / 1 X 1,0", raf: "E-1" } ],
+            hastaGecmisi: "Ağır persistan alerjik astım; dirençli tedavi; ev tozu IgE (+); serum IgE 30–1500 IU/ml",
+            rapor: `<b>Raporda Omalizumab ile ilgili rapor var:</b><br>• Sağlık Kurulu raporu<br>• Kriterler: yüksek doz steroid + LABA/LTRA'ya rağmen kontrolsüz; ev tozu akarı IgE pozitif; serum IgE 30–1500 IU/ml`,
+            doktor: "Alerji ve Astım Değerlendirme Kurulu",
+            brans: "Göğüs Hastalıkları, Alerji-İmmünoloji"
+          }
+        },
+        "1121": {
+          "1121": {
+            patient: "Derya Aksoy",
+            hastaBilgi: { bilgi: "10 yaş; 21 kg", dogum: "12.12.2014", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Omalizumab 150 mg/1 ml enjektör", miktar: 1, stok: 1, periyot: "1 Günde / 1 X 1,0", raf: "E-1" } ],
+            hastaGecmisi: "Ağır persistan alerjik astım; dirençli tedavi; ev tozu IgE (+); serum IgE 30–1500 IU/ml",
+            rapor: `<b>Raporda Omalizumab ile ilgili rapor var:</b><br>• Göğüs + İmmünoloji Kurulu raporu<br>• Yukarıdaki kriterler`,
+            doktor: "Göğüs ve İmmünoloji Uzmanları Kurulu",
+            brans: "Göğüs Hastalıkları, İmmünoloji"
+          }
+        },
+        "1122": {
+          "1122": {
+            patient: "Fatih Kurt",
+            hastaBilgi: { bilgi: "—", dogum: "05.05.1960", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 20 mg tablet", miktar: 1, stok: 6, periyot: "1 Günde / 1 X 1,0", raf: "A-14" } ],
+            hastaGecmisi: "Hipertansiyon; ailede erken kardiyovasküler öykü",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• BR-200 (01.09.2023): 01.05.2023 LDL 200; 08.05.2023 LDL 195<br>• İdame-1 (05.02.2024): LDL 180<br>• İdame-2 (09.07.2024): LDL 170<br>• İdame-3 (01.01.2025): LDL 160`,
+            doktor: "Dr. Ali Vural",
+            brans: "Aile Hekimliği"
+          }
+        },
+        "1123": {
+          "1123": {
+            patient: "Sibel Gül",
+            hastaBilgi: { bilgi: "—", dogum: "07.07.1965", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Atorvastatin 20 mg tablet", miktar: 1, stok: 6, periyot: "1 Günde / 1 X 1,0", raf: "A-14" } ],
+            hastaGecmisi: "Hipertansiyon; ailede erken kardiyovasküler öykü",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• BR-300 (06.07.2023): 01.05.2023 LDL 200; 08.05.2023 LDL 195<br>• İdame-1 (01.01.2024): LDL 180<br>• İdame-2 (01.06.2024): LDL 170<br>• İdame-3 (01.03.2025): LDL 165 & 175`,
+            doktor: "Dr. Elif Sarı",
+            brans: "İç Hastalıkları"
+          }
+        },
+        "1124": {
+          "1124": {
+            patient: "Erhan Polat",
+            hastaBilgi: { bilgi: "—", dogum: "09.09.1962", cinsiyet: "Erkek" },
+            ilaclar: [ { urun: "Atorvastatin 20 mg tablet", miktar: 1, stok: 6, periyot: "1 Günde / 1 X 1,0", raf: "A-14" } ],
+            hastaGecmisi: "Hipertansiyon; ailede erken kardiyovasküler öykü",
+            rapor: `<b>Raporda Atorvastatin ile ilgili rapor var:</b><br>• BR-300 (06.07.2023): 01.05.2023 LDL 200; 08.05.2023 LDL 195<br>• İdame-1 (01.01.2024): LDL 180<br>• İdame-2 (01.06.2024): LDL 170<br>• İdame-3 (01.02.2025): LDL 165; 175`,
+            doktor: "Dr. Cenk Öztürk",
+            brans: "Aile Hekimliği"
+          }
+        },
+        "1125": {
+          "1125": {
+            patient: "Selin Öztürk",
+            hastaBilgi: { bilgi: "14 yaş, kadın; 60 kg", dogum: "14.02.2010", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Omalizumab 150 mg/1 ml enjektör", miktar: 1, stok: 1, periyot: "1 Günde / 1 X 1,0", raf: "E-1" } ],
+            hastaGecmisi: "Ağır persistan alerjik astım; dirençli tedavi; kedi tüyü IgE (+); serum IgE 500 IU/ml",
+            rapor: `<b>Raporda Omalizumab ile ilgili rapor var:</b><br>• BR-100 Başlangıç (01.01.2024): 16 hafta<br>• İdame-1 (01.05.2024): yanıt<br>• İdame-2 (01.05.2025): aile hekimliği takibi, kesintisiz tedavi`,
+            doktor: "Astım Takip ve Değerlendirme Kurulu",
+            brans: "Göğüs Hastalıkları, Alerji-İmmünoloji"
+          }
+        },
+        "1126": {
+          "1126": {
+            patient: "Yasemin Yıldırım",
+            hastaBilgi: { bilgi: "14 yaş, kadın; 60 kg", dogum: "18.03.2010", cinsiyet: "Kadın" },
+            ilaclar: [ { urun: "Omalizumab 150 mg/1 ml enjektör", miktar: 1, stok: 1, periyot: "1 Günde / 1 X 1,0", raf: "E-1" } ],
+            hastaGecmisi: "Ağır persistan alerjik astım; dirençli tedavi",
+            rapor: `<b>Raporda Omalizumab ile ilgili rapor var:</b><br>• BR-100 Başlangıç (01.01.2024): 16 hafta<br>• İdame-1 (01.05.2024): yanıt<br>• İdame-2 (01.03.2025): 01.02.2025 LDL 165; 03.02.2025 LDL 170; ek risk yok`,
+            doktor: "Dr. Nilay Özdemir",
+            brans: "Aile Hekimliği"
+          }
+        }
+      };
+      var tc = document.getElementById("tcNo").value.trim();
+      var recete = document.getElementById("receteNo").value.trim();
+      var resultDiv = document.getElementById("result");
+      if(data[tc] && data[tc][recete]){
+        var receteData = data[tc][recete];
+        let doktorAdi = receteData.doktor;
+        let brans = receteData.brans;
+        let hastaBilgi = receteData.hastaBilgi;
+        let table = `<table style='width:100%;border-collapse:collapse;margin-top:10px;'>
+          <tr style='background:#e9ecef;'>
+            <th style='border:1px solid #ccc;padding:4px;'>Ürün Adı</th>
+            <th style='border:1px solid #ccc;padding:4px;'>Miktarı</th>
+            <th style='border:1px solid #ccc;padding:4px;'>Mevcut Stok</th>
+            <th style='border:1px solid #ccc;padding:4px;'>Periyot / Doz</th>
+            <th style='border:1px solid #ccc;padding:4px;'>Raf Yeri</th>
+          </tr>`;
+        receteData.ilaclar.forEach(function(i){
+          table += `<tr>
+            <td style='border:1px solid #ccc;padding:4px;'>${i.urun}</td>
+            <td style='border:1px solid #ccc;padding:4px;text-align:center;'>${i.miktar}</td>
+            <td style='border:1px solid #ccc;padding:4px;text-align:center;color:#0056b3;'><a href='#' style='color:#0056b3;text-decoration:underline;'>${i.stok}</a></td>
+            <td style='border:1px solid #ccc;padding:4px;text-align:center;'>${i.periyot}</td>
+            <td style='border:1px solid #ccc;padding:4px;text-align:center;'>${i.raf}</td>
+          </tr>`;
+        });
+        table += `</table>`;
+        resultDiv.innerHTML = `<strong>Hasta:</strong> ${receteData.patient} ` +
+          `<button onclick=\"showPatientInfo()\">Hasta Bilgileri</button> ` +
+          `<button onclick=\"showHistory('${receteData.hastaGecmisi}')\">Hasta Geçmişi</button> ` +
+          `<button onclick=\"showReport('${receteData.rapor}')\">Rapor</button><br>` +
+          `<strong>Doktor:</strong> ${doktorAdi} <span style='margin-left:16px;'><strong>Branş:</strong> ${brans}</span><br>` +
+          table +
+          "<div id='patientInfoDiv' style='display:none; margin-top:10px;'></div>" +
+          "<div id='historyDiv' style='display:none; margin-top:10px;'></div>" +
+          "<div id='reportDiv' style='display:none; margin-top:10px;'></div>";
+        window.showPatientInfo = function() {
+          document.getElementById('patientInfoDiv').innerHTML = `<strong>Bilgi:</strong> ${hastaBilgi.bilgi}<br><strong>Doğum Tarihi:</strong> ${hastaBilgi.dogum}<br><strong>Cinsiyet:</strong> ${hastaBilgi.cinsiyet}`;
+          document.getElementById('patientInfoDiv').style.display = 'block';
+        }
+      } else {
+        resultDiv.innerHTML = "Kayıt bulunamadı!";
+      }
+      resultDiv.style.display = "block";
+    }
+    
+    function showHistory(info) {
+      document.getElementById('historyDiv').innerHTML = info;
+      document.getElementById('historyDiv').style.display = 'block';
+    }
+    
+    function showReport(info) {
+      document.getElementById('reportDiv').innerHTML = info;
+      document.getElementById('reportDiv').style.display = 'block';
+    }
+  </script>
+</body>
+</html> 
