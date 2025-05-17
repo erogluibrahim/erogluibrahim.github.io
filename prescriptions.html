@@ -98,7 +98,7 @@
             hastaBilgi: { bilgi: "45 yaş, erkek", dogum: "20.07.1979", cinsiyet: "Erkek" },
             ilaclar: [ { urun: "Fenofibrat (Lipanthyl) 267 mg, 1×1", miktar: 1, stok: 5, periyot: "1 Günde / 1 X 1,0", raf: "C-2" } ],
             hastaGecmisi: "Diabetes mellitus",
-            rapor: `<b>Raporda Fenofibrat ile ilgili rapor var:</b><br>• Başlangıç raporu<br>• Açıklama: 'TGD 215; diyabetli hasta'`,
+            rapor: `<b>Raporda Fenofibrat ile ilgili rapor var:</b><br>• Başlangıç raporu<br>• Açıklama: TGD 215; diyabetli hasta`,
             doktor: "Dr. Canan Polat",
             brans: "Endokrinoloji"
           }
@@ -276,7 +276,7 @@
         resultDiv.innerHTML = `<strong>Hasta:</strong> ${receteData.patient} ` +
           `<button onclick=\"showPatientInfo()\">Hasta Bilgileri</button> ` +
           `<button onclick=\"showHistory('${receteData.hastaGecmisi}')\">Hasta Geçmişi</button> ` +
-          `<button onclick=\"showReport('${receteData.rapor}')\">Rapor</button><br>` +
+          `<button onclick=\"showReport(decodeURIComponent('${encodeURIComponent(receteData.rapor)}'))\">Rapor</button><br>` +
           `<strong>Doktor:</strong> ${doktorAdi} <span style='margin-left:16px;'><strong>Branş:</strong> ${brans}</span><br>` +
           table +
           "<div id='patientInfoDiv' style='display:none; margin-top:10px;'></div>" +
