@@ -21,17 +21,17 @@
 </head>
 <body>
   <div class="header">
-    <div class="logo">
+    <!-- <div class="logo">
       <img src="https://via.placeholder.com/100x50?text=Logo1" alt="Logo 1">
       <img src="https://via.placeholder.com/100x50?text=Logo2" alt="Logo 2">
-    </div>
+    </div> -->
     <h2>SGK Eczane Sistemi</h2>
   </div>
   <div class="nav">
     <a href="prescriptions.html">Reçete Sorgulama</a>
     <a href="hasta_gecmisi.html">Hasta Geçmişi</a>
     <a href="stok_kontrol.html">Stok Kontrol</a>
-    <a href="logout.html">Çıkış</a>
+    <a href="#" onclick="logout()">Çıkış</a>
   </div>
   <div class="container">
     <div style="background:#4a5a7a;color:white;padding:8px 12px;border-radius:4px 4px 0 0;font-weight:bold;font-size:16px;">E-Reçete Sorgu</div>
@@ -299,6 +299,11 @@
     function showHistory(info) {
       document.getElementById('historyDiv').innerHTML = info;
       document.getElementById('historyDiv').style.display = 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      window.location.href = 'index.html';
     }
   </script>
 </body>
