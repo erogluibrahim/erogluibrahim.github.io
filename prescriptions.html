@@ -274,9 +274,9 @@
         });
         table += `</table>`;
         resultDiv.innerHTML = `<strong>Hasta:</strong> ${receteData.patient} ` +
-          `<button onclick=\"showPatientInfo()\">Hasta Bilgileri</button> ` +
-          `<button onclick=\"showHistory('${receteData.hastaGecmisi}')\">Hasta Geçmişi</button> ` +
-          `<button onclick=\"showReport(decodeURIComponent('${encodeURIComponent(receteData.rapor)}'))\">Rapor</button><br>` +
+          `<button onclick="showPatientInfo()">Hasta Bilgileri</button> ` +
+          `<button onclick="showHistory('${receteData.hastaGecmisi}')">Hasta Geçmişi</button> ` +
+          `<button id="raporBtn" type="button">Rapor</button><br>` +
           `<strong>Doktor:</strong> ${doktorAdi} <span style='margin-left:16px;'><strong>Branş:</strong> ${brans}</span><br>` +
           table +
           "<div id='patientInfoDiv' style='display:none; margin-top:10px;'></div>" +
@@ -286,6 +286,10 @@
           document.getElementById('patientInfoDiv').innerHTML = `<strong>Bilgi:</strong> ${hastaBilgi.bilgi}<br><strong>Doğum Tarihi:</strong> ${hastaBilgi.dogum}<br><strong>Cinsiyet:</strong> ${hastaBilgi.cinsiyet}`;
           document.getElementById('patientInfoDiv').style.display = 'block';
         }
+        document.getElementById('raporBtn').addEventListener('click', function() {
+          document.getElementById('reportDiv').innerHTML = receteData.rapor;
+          document.getElementById('reportDiv').style.display = 'block';
+        });
       } else {
         resultDiv.innerHTML = "Kayıt bulunamadı!";
       }
@@ -295,11 +299,6 @@
     function showHistory(info) {
       document.getElementById('historyDiv').innerHTML = info;
       document.getElementById('historyDiv').style.display = 'block';
-    }
-    
-    function showReport(info) {
-      document.getElementById('reportDiv').innerHTML = info;
-      document.getElementById('reportDiv').style.display = 'block';
     }
   </script>
 </body>
